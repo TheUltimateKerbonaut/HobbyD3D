@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "StringConverter.h"
 
 class RenderWindow
 {
