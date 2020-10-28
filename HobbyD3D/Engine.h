@@ -10,6 +10,8 @@ public:
 
 	BOOL Update();
 	void Prepare();
+	void Render();
+
 	int GetExitStatus();
 
 private:

@@ -87,5 +87,6 @@ void RenderWindow::Update()
 
 RenderWindow::~RenderWindow()
 {
+	UnregisterClass(m_pClassName.c_str(), m_Instance);
 	DestroyWindow(m_Window);
 }

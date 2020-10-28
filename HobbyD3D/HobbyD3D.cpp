@@ -10,6 +10,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	while (bResult = engine.Update())
 	{
 		engine.Prepare();
+		engine.Render();
 	}
 
 	return bResult == -1 ? 1 : engine.GetExitStatus();

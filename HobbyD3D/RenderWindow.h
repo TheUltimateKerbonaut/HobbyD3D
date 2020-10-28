@@ -11,6 +11,9 @@ public:
 	BOOL GetMessages();
 	void Update();
 
+	inline unsigned int GetWidth() { return m_Width; }
+	inline unsigned int GetHeight() { return m_Height; }
+	inline HWND GetWindow() { return m_Window; }
 	inline WPARAM GetExitStatus() { return m_Msg.wParam; }
 
 private:

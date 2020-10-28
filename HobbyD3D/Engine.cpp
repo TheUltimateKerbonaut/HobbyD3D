@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "Engine.h"
 
-Engine::Engine(HINSTANCE instance) : m_Window(instance, 800, 600)
+constexpr unsigned int width =	800;
+constexpr unsigned int height = 600;
+
+Engine::Engine(HINSTANCE instance) : m_Window(instance, width, height), m_Renderer(m_Window)
 {
 
 }
@@ -14,6 +17,11 @@ BOOL Engine::Update()
 void Engine::Prepare()
 {
 	m_Window.Update();
+}
+
+void Engine::Render()
+{
+	m_Renderer.RenderFrame();
 }
 
 int Engine::GetExitStatus()
