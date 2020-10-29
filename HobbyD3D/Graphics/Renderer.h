@@ -28,6 +28,7 @@ private:
 	ComPtr<ID3D11DeviceContext>		m_DeviceContext;
 	ComPtr<IDXGISwapChain>			m_Swapchain;
 	ComPtr<ID3D11RenderTargetView>	m_RenderTargetView;
+	ComPtr<ID3D11RasterizerState>	m_RasterizerState;
 
 	VertexShader	m_VertexShader;
 	PixelShader		m_PixelShader;

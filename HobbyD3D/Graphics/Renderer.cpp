@@ -103,6 +103,26 @@ bool Renderer::CreateRenderTargetView(RenderWindow& window)
 	// Set the viewport
 	m_DeviceContext->RSSetViewports(1, &viewport);
 
+	// Create rasterizer state
+	D3D11_RASTERIZER_DESC rasterizerDescription = {};
+	rasterizerDescription.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	rasterizerDescription.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+	rasterizerDescription.FrontCounterClockwise = false;
+	rasterizerDescription.DepthBias = 0;
+	rasterizerDescription.SlopeScaledDepthBias = 0.0f;
+	rasterizerDescription.DepthBiasClamp = 0.0f;
+	rasterizerDescription.DepthClipEnable = true;
+	rasterizerDescription.ScissorEnable = false;
+	rasterizerDescription.MultisampleEnable = false;
+	rasterizerDescription.AntialiasedLineEnable = false;
+	
+	hr = m_Device->CreateRasterizerState(&rasterizerDescription, m_RasterizerState.GetAddressOf());
+	if (FAILED(hr))
+	{
+		Logger::Log(hr, "Failed to create rasterizer state.");
+		return false;
+	}
+
 	return true;
 }
 
@@ -114,6 +134,7 @@ void Renderer::RenderFrame()
 
 	m_DeviceContext->IASetInputLayout(m_VertexShader.GetInputLayout());
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_DeviceContext->RSSetState(m_RasterizerState.Get());
 
 	m_DeviceContext->VSSetShader(m_VertexShader.GetShader(), NULL, 0);
 	m_DeviceContext->PSSetShader(m_PixelShader.GetShader(), NULL, 0);
