@@ -11,7 +11,7 @@ Renderer::Renderer(RenderWindow& window)
 bool Renderer::InitDirectX(RenderWindow& window)
 {
 	if (!CreateDeviceAndSwapchain(window)) return false;
-	if (!CreateRenderTargetView()) return false;
+	if (!CreateRenderTargetView(window)) return false;
 	return true;
 }
 
@@ -71,7 +71,7 @@ bool Renderer::CreateDeviceAndSwapchain(RenderWindow& window)
 	return true;
 }
 
-bool Renderer::CreateRenderTargetView()
+bool Renderer::CreateRenderTargetView(RenderWindow& window)
 {
 	// Get backbuffer from swapchain
 	ComPtr<ID3D11Texture2D> backBuffer;
@@ -91,6 +91,16 @@ bool Renderer::CreateRenderTargetView()
 	
 	// Set render target
 	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), NULL); // Last argument - pointer to render stencil view
+
+	// Create the viewport
+	D3D11_VIEWPORT viewport = { 0 };
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = static_cast<float>(window.GetWidth());
+	viewport.Height = static_cast<float>(window.GetHeight());
+
+	// Set the viewport
+	m_DeviceContext->RSSetViewports(1, &viewport);
 
 	return true;
 }
@@ -128,26 +138,13 @@ bool Renderer::InitShaders()
 #endif
 	}
 
-	if (!m_VertexShader.Init(m_Device, sShaderFolder + L"VertexShader.cso")) return false;
-
-	std::array<D3D11_INPUT_ELEMENT_DESC, 1> layout =
+	std::vector<D3D11_INPUT_ELEMENT_DESC> layout =
 	{
 		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT hr = m_Device->CreateInputLayout(
-		layout.data(), 
-		(UINT) layout.size(), 
-		m_VertexShader.GetBuffer()->GetBufferPointer(),
-		m_VertexShader.GetBuffer()->GetBufferSize(),
-		m_InputLayout.GetAddressOf()
-	);
-
-	if (FAILED(hr))
-	{
-		Logger::Log(hr, "Failed to create input layout.");
-		return false;
-	}
+	if (!m_VertexShader.Init(m_Device, sShaderFolder + L"VertexShader.cso", layout)) return false;
+	if (!m_PixelShader.Init(m_Device, sShaderFolder + L"PixelShader.cso", layout)) return false;
 
 	return true;
 }
