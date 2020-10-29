@@ -39,8 +39,9 @@ bool VertexShader::Init(ComPtr<ID3D11Device>& device, const std::wstring& sFilen
 	return true;
 }
 
-ID3D11VertexShader* VertexShader::GetShader()	{ return m_Shader.Get(); }
-ID3D10Blob* VertexShader::GetBuffer()			{ return m_Buffer.Get(); }
+ID3D11VertexShader* VertexShader::GetShader()		{ return m_Shader.Get(); }
+ID3D10Blob* VertexShader::GetBuffer()				{ return m_Buffer.Get(); }
+ID3D11InputLayout* VertexShader::GetInputLayout()	{ return m_InputLayout.Get(); }
 
 VertexShader::~VertexShader() {}
 
@@ -81,7 +82,8 @@ bool PixelShader::Init(ComPtr<ID3D11Device>& device, const std::wstring& sFilena
 	return true;
 }
 
-ID3D11PixelShader* PixelShader::GetShader() { return m_Shader.Get(); }
-ID3D10Blob* PixelShader::GetBuffer() { return m_Buffer.Get(); }
+ID3D11PixelShader* PixelShader::GetShader()			{ return m_Shader.Get(); }
+ID3D10Blob* PixelShader::GetBuffer()				{ return m_Buffer.Get(); }
+ID3D11InputLayout* PixelShader::GetInputLayout()	{ return m_InputLayout.Get(); }
 
 PixelShader::~PixelShader() {}

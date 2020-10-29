@@ -13,6 +13,7 @@ public:
 
 	ID3D11VertexShader* GetShader();
 	ID3D10Blob*			GetBuffer();
+	ID3D11InputLayout*	GetInputLayout();
 
 private:
 	ComPtr<ID3D11VertexShader>	m_Shader;
@@ -29,8 +30,9 @@ public:
 
 	bool Init(ComPtr<ID3D11Device>& device, const std::wstring& sFilename, const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout);
 
-	ID3D11PixelShader* GetShader();
-	ID3D10Blob* GetBuffer();
+	ID3D11PixelShader*	GetShader();
+	ID3D10Blob*			GetBuffer();
+	ID3D11InputLayout*	GetInputLayout();
 
 private:
 	ComPtr<ID3D11PixelShader>	m_Shader;

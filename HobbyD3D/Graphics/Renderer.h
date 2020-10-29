@@ -3,6 +3,7 @@
 #include "AdapterList.h"
 #include "../RenderWindow.h"
 #include "Shaders.h"
+#include "Vertex.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -18,6 +19,7 @@ private:
 
 	bool InitDirectX(RenderWindow& window);
 	bool InitShaders();
+	bool InitScene();
 
 	bool CreateDeviceAndSwapchain(RenderWindow& window);
 	bool CreateRenderTargetView(RenderWindow& window);
@@ -29,5 +31,8 @@ private:
 
 	VertexShader	m_VertexShader;
 	PixelShader		m_PixelShader;
+
+	ComPtr<ID3D11Buffer>	m_VertexBuffer;
+
 };
 

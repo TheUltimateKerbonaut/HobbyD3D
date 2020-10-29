@@ -6,6 +6,7 @@ Renderer::Renderer(RenderWindow& window)
 {
 	InitDirectX(window);
 	InitShaders();
+	InitScene();
 }
 
 bool Renderer::InitDirectX(RenderWindow& window)
@@ -107,10 +108,21 @@ bool Renderer::CreateRenderTargetView(RenderWindow& window)
 
 void Renderer::RenderFrame()
 {
-	float bgColour[] = { 0.2f, 0.3f, 0.3f, 1.0f };
-
 	// Clear render target view
+	float bgColour[] = { 0.2f, 0.3f, 0.3f, 1.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), bgColour);
+
+	m_DeviceContext->IASetInputLayout(m_VertexShader.GetInputLayout());
+	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	m_DeviceContext->VSSetShader(m_VertexShader.GetShader(), NULL, 0);
+	m_DeviceContext->PSSetShader(m_PixelShader.GetShader(), NULL, 0);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	m_DeviceContext->IASetVertexBuffers(0, 1, m_VertexBuffer.GetAddressOf(), &stride, &offset);
+
+	m_DeviceContext->Draw(3, 0);
 
 	// Present swapchain
 	m_Swapchain->Present(1, NULL); // Vsync, flags
@@ -145,6 +157,35 @@ bool Renderer::InitShaders()
 
 	if (!m_VertexShader.Init(m_Device, sShaderFolder + L"VertexShader.cso", layout)) return false;
 	if (!m_PixelShader.Init(m_Device, sShaderFolder + L"PixelShader.cso", layout)) return false;
+
+	return true;
+}
+
+bool Renderer::InitScene()
+{
+	std::vector<Vertex> vertices =
+	{
+		{ -0.5f, 0.0f },
+		{ 0.0f, 0.5f },
+		{ 0.5f, 0.0f }
+	};
+
+	D3D11_BUFFER_DESC vertexBufferDescription = { 0 };
+	vertexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDescription.ByteWidth = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+	vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDescription.CPUAccessFlags = 0;
+	vertexBufferDescription.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+	vertexBufferData.pSysMem = vertices.data();
+
+	HRESULT hr = m_Device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_VertexBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		Logger::Log(hr, "Failed to create vertex buffer.");
+		return false;
+	}
 
 	return true;
 }
