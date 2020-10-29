@@ -32,11 +32,9 @@ public:
 
 	ID3D11PixelShader*	GetShader();
 	ID3D10Blob*			GetBuffer();
-	ID3D11InputLayout*	GetInputLayout();
 
 private:
 	ComPtr<ID3D11PixelShader>	m_Shader;
 	ComPtr<ID3D10Blob>			m_Buffer;
-	ComPtr<ID3D11InputLayout>	m_InputLayout;
 
 };

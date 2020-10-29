@@ -65,25 +65,10 @@ bool PixelShader::Init(ComPtr<ID3D11Device>& device, const std::wstring& sFilena
 		return false;
 	}
 
-	// Create input layout
-	hr = device->CreateInputLayout(
-		layout.data(),
-		(UINT)layout.size(),
-		GetBuffer()->GetBufferPointer(),
-		GetBuffer()->GetBufferSize(),
-		m_InputLayout.GetAddressOf()
-	);
-	if (FAILED(hr))
-	{
-		Logger::Log(hr, "Failed to create input layout.");
-		return false;
-	}
-
 	return true;
 }
 
 ID3D11PixelShader* PixelShader::GetShader()			{ return m_Shader.Get(); }
 ID3D10Blob* PixelShader::GetBuffer()				{ return m_Buffer.Get(); }
-ID3D11InputLayout* PixelShader::GetInputLayout()	{ return m_InputLayout.Get(); }
 
 PixelShader::~PixelShader() {}
