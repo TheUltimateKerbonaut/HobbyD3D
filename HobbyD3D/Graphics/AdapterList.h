@@ -13,6 +13,7 @@ public:
 	AdapterList();
 	~AdapterList();
 
+	bool Init();
 	Adapter ChoseAdapter();
 
 private:

@@ -5,18 +5,22 @@
 Renderer::Renderer(RenderWindow& window)
 {
 	InitDirectX(window);
+	InitShaders();
 }
 
-void Renderer::InitDirectX(RenderWindow& window)
+bool Renderer::InitDirectX(RenderWindow& window)
 {
-	CreateDeviceAndSwapchain(window);
-	CreateRenderTargetView();
+	if (!CreateDeviceAndSwapchain(window)) return false;
+	if (!CreateRenderTargetView()) return false;
+	return true;
 }
 
-void Renderer::CreateDeviceAndSwapchain(RenderWindow& window)
+bool Renderer::CreateDeviceAndSwapchain(RenderWindow& window)
 {
 	// Choose adapter
-	Adapter adapter = AdapterList().ChoseAdapter();
+	AdapterList list = AdapterList();
+	if (!list.Init()) return false;
+	Adapter adapter = list.ChoseAdapter();
 
 	// Create swapchain description
 	DXGI_SWAP_CHAIN_DESC swapchainDescription = { 0 };
@@ -61,11 +65,13 @@ void Renderer::CreateDeviceAndSwapchain(RenderWindow& window)
 	if (FAILED(hr))
 	{
 		Logger::Log(hr, "Failed to create D3D11 device and swapchain.");
-		exit(-1);
+		return false;
 	}
+
+	return true;
 }
 
-void Renderer::CreateRenderTargetView()
+bool Renderer::CreateRenderTargetView()
 {
 	// Get backbuffer from swapchain
 	ComPtr<ID3D11Texture2D> backBuffer;
@@ -73,18 +79,20 @@ void Renderer::CreateRenderTargetView()
 	if (FAILED(hr))
 	{
 		Logger::Log(hr, "Failed to get backbuffer from swapchain");
-		exit(-1);
+		return false;
 	}
 
 	hr = m_Device->CreateRenderTargetView(backBuffer.Get(), NULL, m_RenderTargetView.GetAddressOf());
 	if (FAILED(hr))
 	{
 		Logger::Log(hr, "Failed to create render target view");
-		exit(-1);
+		return false;
 	}
 	
 	// Set render target
 	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), NULL); // Last argument - pointer to render stencil view
+
+	return true;
 }
 
 void Renderer::RenderFrame()
@@ -98,7 +106,53 @@ void Renderer::RenderFrame()
 	m_Swapchain->Present(1, NULL); // Vsync, flags
 }
 
+bool Renderer::InitShaders()
+{
+	// Determine shader path
+	std::wstring sShaderFolder = L"";
+#pragma region GetShaderPath
+	if (IsDebuggerPresent() == TRUE)
+	{
+#ifdef _DEBUG
+	#ifdef _WIN64
+		sShaderFolder = L"../x64/Debug/";
+	#else
+		sShaderFolder = L"../Debug/";
+	#endif
+#else
+	#ifdef _WIN64
+			sShaderFolder = L"../x64/Release/";
+	#else
+			sShaderFolder = L"../Release/";
+	#endif
+#endif
+	}
+
+	if (!m_VertexShader.Init(m_Device, sShaderFolder + L"VertexShader.cso")) return false;
+
+	std::array<D3D11_INPUT_ELEMENT_DESC, 1> layout =
+	{
+		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	HRESULT hr = m_Device->CreateInputLayout(
+		layout.data(), 
+		(UINT) layout.size(), 
+		m_VertexShader.GetBuffer()->GetBufferPointer(),
+		m_VertexShader.GetBuffer()->GetBufferSize(),
+		m_InputLayout.GetAddressOf()
+	);
+
+	if (FAILED(hr))
+	{
+		Logger::Log(hr, "Failed to create input layout.");
+		return false;
+	}
+
+	return true;
+}
+
 Renderer::~Renderer()
 {
-
+	
 }

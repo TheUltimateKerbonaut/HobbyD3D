@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "AdapterList.h"
 #include "../RenderWindow.h"
+#include "Shaders.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -15,15 +16,19 @@ public:
 
 private:
 
-	void InitDirectX(RenderWindow& window);
+	bool InitDirectX(RenderWindow& window);
+	bool InitShaders();
 
-	void CreateDeviceAndSwapchain(RenderWindow& window);
-	void CreateRenderTargetView();
+	bool CreateDeviceAndSwapchain(RenderWindow& window);
+	bool CreateRenderTargetView();
 
 	ComPtr<ID3D11Device>			m_Device;
 	ComPtr<ID3D11DeviceContext>		m_DeviceContext;
 	ComPtr<IDXGISwapChain>			m_Swapchain;
 	ComPtr<ID3D11RenderTargetView>	m_RenderTargetView;
 
+	ComPtr<ID3D11InputLayout>		m_InputLayout;
+
+	VertexShader m_VertexShader;
 };
 

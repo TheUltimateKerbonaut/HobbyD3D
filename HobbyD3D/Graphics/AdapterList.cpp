@@ -4,7 +4,9 @@
 
 using Microsoft::WRL::ComPtr;
 
-AdapterList::AdapterList()
+AdapterList::AdapterList() {}
+
+bool AdapterList::Init()
 {
 	// Create a IDXGIFactory
 	ComPtr<IDXGIFactory> pFactory;
@@ -12,7 +14,7 @@ AdapterList::AdapterList()
 	if (FAILED(hr))
 	{
 		Logger::Log(hr, "Failed to create IDXGIFactory factory for enumerating adapters.");
-		exit(-1);
+		return false;
 	}
 
 	// Enum adapters
@@ -29,8 +31,10 @@ AdapterList::AdapterList()
 	if (m_vAdapters.size() < 1)
 	{
 		Logger::Log("No IDXGI adapters found.");
-		exit(-1);
+		return false;
 	}
+
+	return true;
 }
 
 AdapterList::~AdapterList()
